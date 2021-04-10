@@ -12,8 +12,8 @@ public class Reader {
     public String readString(String variableName) {
         String str = "";
         while (str.isEmpty()) {
-            io.getPrintStream().print(makeTip(variableName));
-            str = io.getScanner().nextLine();
+            io.print(makeTip(variableName));
+            str = io.nextLine();
         }
         return str;
     }
@@ -22,11 +22,11 @@ public class Reader {
         T res = null;
         while (res == null) {
             String tip = makeTip(variableName, joinEnumConstants(enumeration));
-            io.getPrintStream().print(tip);
+            io.print(tip);
             try {
-                res = T.valueOf(enumeration, io.getScanner().nextLine().toUpperCase());
+                res = T.valueOf(enumeration, io.nextLine().toUpperCase());
             } catch (IllegalArgumentException e) {
-                io.getPrintStream().println(e.toString());
+                io.printErr(e);
             }
         }
         return res;
@@ -37,11 +37,11 @@ public class Reader {
         // TODO: Fix DRY violation as soon as third similar overload comes
         Long res = null;
         while (res == null || !isConditionMet.apply(res)) {
-            io.getPrintStream().print(makeTip(variableName, condition));
+            io.print(makeTip(variableName, condition));
             try {
-                res = Long.parseLong(io.getScanner().nextLine());
+                res = Long.parseLong(io.nextLine());
             } catch (NumberFormatException e) {
-                io.getPrintStream().println(e.toString());
+                io.printErr(e);
             }
         }
         return res;
@@ -52,11 +52,11 @@ public class Reader {
         // TODO: Fix DRY violation as soon as third similar overload comes
         Float res = null;
         while (res == null || !isConditionMet.apply(res)) {
-            io.getPrintStream().print(makeTip(variableName, condition));
+            io.print(makeTip(variableName, condition));
             try {
-                res = Float.parseFloat(io.getScanner().nextLine());
+                res = Float.parseFloat(io.nextLine());
             } catch (NumberFormatException e) {
-                io.getPrintStream().println(e.toString());
+                io.printErr(e);
             }
         }
         return res;

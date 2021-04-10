@@ -3,8 +3,6 @@ package org.commands;
 import org.lib.CommandIO;
 import org.lib.MyCollection;
 
-import java.util.List;
-
 public class RemoveById implements Command {
     private final MyCollection collection;
 
@@ -13,8 +11,8 @@ public class RemoveById implements Command {
     }
 
     @Override
-    public String execute(List<String> stringArguments, CommandIO commandIO) {
-        Long id = Long.parseLong(stringArguments.get(1));
+    public String execute(CommandArgument commandArgument, CommandIO commandIO) throws BadCommandArgumentException {
+        Long id = commandArgument.getLong();
         int n = collection.remove(id);
         return "removed " + n + " elements\n";
     }

@@ -3,8 +3,6 @@ package org.commands;
 import org.lib.CommandIO;
 import org.lib.HistoryHolder;
 
-import java.util.List;
-
 public class History implements Command {
     private final HistoryHolder historyHolder;
 
@@ -13,7 +11,7 @@ public class History implements Command {
     }
 
     @Override
-    public String execute(List<String> stringArguments, CommandIO commandIO) {
+    public String execute(CommandArgument commandArgument, CommandIO commandIO) {
         StringBuilder res = new StringBuilder();
         historyHolder.getHistory().forEach(x -> res.append(x).append("\n"));
         return res.toString().isEmpty() ? "\n" : res.toString();

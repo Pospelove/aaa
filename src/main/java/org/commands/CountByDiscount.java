@@ -3,8 +3,6 @@ package org.commands;
 import org.lib.CommandIO;
 import org.lib.MyCollection;
 
-import java.util.List;
-
 public class CountByDiscount implements Command {
     private final MyCollection collection;
 
@@ -13,8 +11,8 @@ public class CountByDiscount implements Command {
     }
 
     @Override
-    public String execute(List<String> stringArguments, CommandIO commandIO) {
-        long discount = Long.parseLong(stringArguments.get(1));
+    public String execute(CommandArgument commandArgument, CommandIO commandIO) throws BadCommandArgumentException {
+        long discount = commandArgument.getLong();
         long count = collection.stream().filter(x -> x.getDiscount() == discount).count();
         return "total: " + count + "\n";
     }

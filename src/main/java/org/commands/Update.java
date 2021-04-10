@@ -4,8 +4,6 @@ import org.lib.CommandIO;
 import org.lib.MyCollection;
 import org.models.Ticket;
 
-import java.util.List;
-
 public class Update implements Command {
     private final MyCollection collection;
 
@@ -14,8 +12,8 @@ public class Update implements Command {
     }
 
     @Override
-    public String execute(List<String> stringArguments, CommandIO commandIO) {
-        Ticket element = new Ticket(Integer.parseInt(stringArguments.get(1)), commandIO);
+    public String execute(CommandArgument commandArgument, CommandIO commandIO) throws BadCommandArgumentException {
+        Ticket element = new Ticket(commandArgument.getInteger(), commandIO);
         collection.update(element);
         return "updated\n";
     }

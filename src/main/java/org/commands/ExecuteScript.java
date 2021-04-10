@@ -9,11 +9,12 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Scanner;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ExecuteScript implements Command {
-    private ArrayList<Command> commands;
-    private HistoryHolder historyHolder;
+    private final ArrayList<Command> commands;
+    private final HistoryHolder historyHolder;
 
     public ExecuteScript(ArrayList<Command> commands, HistoryHolder historyHolder) {
         this.commands = commands;
@@ -21,55 +22,56 @@ public class ExecuteScript implements Command {
     }
 
     @Override
-    public String execute(List<String> stringArguments, CommandIO commandIO) {
+    public String execute(CommandArgument commandArgument, CommandIO commandIO) throws BadCommandArgumentException {
         if (recursionDepth > 10) {
             return "Maximum recursion depth exceeded\n";
         }
-
-        ++recursionDepth;
-        String res = "";
         try {
-            res = executeUnsafe(stringArguments, commandIO);
+            ++recursionDepth;
+            return runThisCommand(commandArgument, commandIO);
         } finally {
             --recursionDepth;
         }
-
-        return res;
     }
 
-    private String executeUnsafe(List<String> stringArguments, CommandIO commandIO) {
-        String filename = stringArguments.get(1);
-        commandIO.getPrintStream().println("Executing " + filename + "\n");
+    private String runThisCommand(CommandArgument commandArgument, CommandIO commandIO) throws BadCommandArgumentException {
+        String filename = commandArgument.getString();
 
         StringBuilder res = new StringBuilder();
         try {
-            Files.lines(Path.of(filename)).forEach(line -> {
-                List<String> args = new ArrayList<>(Arrays.asList(line.split(" ")));
-
-                // Fill with a default value "0"
-                while (args.size() < 10) {
-                    args.add("0");
+            Stream<String> lines = Files.lines(Path.of(filename));
+            for (String line : lines.collect(Collectors.toSet())) {
+                List<String> tokens = new ArrayList<>(Arrays.asList(line.split(" ")));
+                String commandName = tokens.get(0);
+                historyHolder.add(commandName);
+                CommandArgument subCommandArgument = new CommandArgument(tokens);
+                try {
+                    String subCommandResult = findCommand(commandName).execute(subCommandArgument, commandIO);
+                    res.append(subCommandResult);
+                } catch (NoSuchCommandException e) {
+                    return "Unknown command '" + commandName + "'\n";
                 }
-
-                res.append(runCommand(args, commandIO));
-            });
+            }
         } catch (IOException e) {
             return e.toString() + "\n";
         }
         return res.toString();
     }
 
-    private String runCommand(List<String> stringArguments, CommandIO commandIO) {
-        historyHolder.add(stringArguments.get(0));
+    private String runSubCommand(Command subCommand, CommandArgument subCommandArgument, CommandIO commandIO) throws BadCommandArgumentException {
+        return subCommand.execute(subCommandArgument, commandIO);
+    }
 
-        Scanner elementArgument = new Scanner(System.in);
-
+    private Command findCommand(String commandName) throws NoSuchCommandException {
         for (Command command : commands) {
-            if (command.getName().equals(stringArguments.get(0))) {
-                return command.execute(stringArguments, commandIO);
+            if (command.getName().equals(commandName)) {
+                return command;
             }
         }
-        return "Unknown command '" + stringArguments.get(0) + "'\n";
+        throw new NoSuchCommandException();
+    }
+
+    private static class NoSuchCommandException extends Exception {
     }
 
     @Override

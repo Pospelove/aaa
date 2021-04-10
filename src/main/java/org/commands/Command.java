@@ -2,10 +2,8 @@ package org.commands;
 
 import org.lib.CommandIO;
 
-import java.util.List;
-
 public interface Command {
-    String execute(List<String> stringArguments, CommandIO commandIO);
+    String execute(CommandArgument commandArgument, CommandIO commandIO) throws BadCommandArgumentException;
 
     String getDescription();
 

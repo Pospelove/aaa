@@ -2,10 +2,7 @@ package org.commands;
 
 import org.lib.CommandIO;
 import org.lib.MyCollection;
-import org.lib.Reader;
 import org.models.TicketType;
-
-import java.util.List;
 
 public class CountLessThenType implements Command {
     private final MyCollection collection;
@@ -15,13 +12,8 @@ public class CountLessThenType implements Command {
     }
 
     @Override
-    public String execute(List<String> stringArguments, CommandIO commandIO) {
-        TicketType type;
-        try {
-            type = TicketType.valueOf(stringArguments.get(1));
-        } catch (IllegalArgumentException exception) {
-            return "Expected one of " + Reader.joinEnumConstants(TicketType.class) + ", but got " + stringArguments.get(1);
-        }
+    public String execute(CommandArgument commandArgument, CommandIO commandIO) throws BadCommandArgumentException {
+        TicketType type = commandArgument.getEnum(TicketType.class);
         long n = collection.stream().filter(x -> x.getType().ordinal() < type.ordinal()).count();
         return "total: " + n + "\n";
     }

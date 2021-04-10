@@ -2,9 +2,12 @@ package org.example;
 
 import org.commands.*;
 import org.lib.*;
-import org.models.Ticket;
+import org.models.Tickets;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
@@ -24,10 +27,6 @@ public class App {
     }
 
     private static MyCollection loadCollectionFromFile(String fileName) throws IOException, DeserializationFailure {
-        class Tickets implements Serializable {
-            public ArrayList<Ticket> tickets;
-        }
-
         BufferedDataReader bufferedDataReader = new BufferedDataReader(fileName);
         String data = bufferedDataReader.readData();
         JsonSerializer serializer = new JsonSerializer();
@@ -42,7 +41,8 @@ public class App {
         try {
             return loadCollectionFromFile(fileName);
         } catch (Exception e) {
-            System.out.println("Didn't load the collection from file '" + fileName + "' due to " + e.getClass().getSimpleName());
+            System.out.println("Didn't load the collection from file '" + fileName + "' due to " + e.getClass().getSimpleName() + ":");
+            System.out.println(e.toString());
             System.out.println("Initializing a new one");
             return new MyCollection();
         }
@@ -63,7 +63,7 @@ public class App {
 
     public static void main(String[] args) throws IOException {
         HistoryHolder historyHolder = new HistoryHolder(9);
-        CommandIO commandIO = new CommandIO(new Scanner(System.in), System.out);
+        CommandIO commandIO = new CommandIO(new Scanner(System.in), System.out, System.out);
         String fileName = getFileName();
 
         MyCollection myCollection = initializeCollection(fileName);
@@ -102,11 +102,17 @@ public class App {
                 executeScriptArgs.add(executeScript.getName());
                 executeScriptArgs.add(path);
 
-                String res = executeScript.execute(executeScriptArgs, commandIO);
-                System.out.println(res);
+                String res = null;
+                try {
+                    res = executeScript.execute(new CommandArgument(executeScriptArgs), commandIO);
+                    System.out.println(res);
+                } catch (BadCommandArgumentException exception) {
+                    System.err.println(exception.getMessage());
+                }
             }
         } catch (NoSuchElementException exception) {
-            (new Exit()).execute(new ArrayList<>(), commandIO);
+            CommandArgument emptyArgument = new CommandArgument(new ArrayList<>());
+            (new Exit()).execute(emptyArgument, commandIO);
         }
     }
 }

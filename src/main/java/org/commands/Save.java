@@ -4,12 +4,10 @@ import org.lib.BufferedDataWriter;
 import org.lib.CommandIO;
 import org.lib.JsonSerializer;
 import org.lib.MyCollection;
-import org.models.Ticket;
+import org.models.Tickets;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
 
 public class Save implements Command {
     private final MyCollection collection;
@@ -21,11 +19,7 @@ public class Save implements Command {
     }
 
     @Override
-    public String execute(List<String> stringArguments, CommandIO commandIO) {
-        class Tickets implements Serializable {
-            public ArrayList<Ticket> tickets;
-        }
-
+    public String execute(CommandArgument commandArgument, CommandIO commandIO) {
         Tickets tickets = new Tickets();
         tickets.tickets = new ArrayList<>();
         collection.forEach(x -> tickets.tickets.add(x));

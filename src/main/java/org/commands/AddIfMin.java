@@ -4,7 +4,6 @@ import org.lib.CommandIO;
 import org.lib.MyCollection;
 import org.models.Ticket;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -19,7 +18,7 @@ public class AddIfMin implements Command {
     }
 
     @Override
-    public String execute(List<String> stringArguments, CommandIO commandIO) {
+    public String execute(CommandArgument commandArgument, CommandIO commandIO) {
         Ticket element = new Ticket(collection.getFreeId(), commandIO);
         Ticket elementWithoutIds = element.cloneWithoutIdsAndDates();
 

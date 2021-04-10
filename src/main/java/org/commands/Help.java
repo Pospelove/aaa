@@ -12,7 +12,7 @@ public class Help implements Command {
     }
 
     @Override
-    public String execute(List<String> stringArguments, CommandIO commandIO) {
+    public String execute(CommandArgument commandArgument, CommandIO commandIO) {
         final StringBuilder res = new StringBuilder();
         for (Command command : this.commandList) {
             res.append(command.getName());

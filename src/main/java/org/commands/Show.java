@@ -3,8 +3,6 @@ package org.commands;
 import org.lib.CommandIO;
 import org.lib.MyCollection;
 
-import java.util.List;
-
 public class Show implements Command {
     private final MyCollection collection;
 
@@ -13,7 +11,7 @@ public class Show implements Command {
     }
 
     @Override
-    public String execute(List<String> stringArguments, CommandIO commandIO) {
+    public String execute(CommandArgument commandArgument, CommandIO commandIO) {
         StringBuilder res = new StringBuilder();
         collection.forEach(element -> res.append(element.toString()).append("\n"));
         return res.toString();
