@@ -1,7 +1,7 @@
 package org.commands;
 
-import org.lib.CommandIO;
 import org.lib.MyCollection;
+import org.lib.Reader;
 import org.models.Ticket;
 
 public class Add implements Command {
@@ -12,8 +12,8 @@ public class Add implements Command {
     }
 
     @Override
-    public String execute(CommandArgument commandArgument, CommandIO commandIO) {
-        Ticket element = new Ticket(collection.getFreeId(), commandIO);
+    public String execute(CommandArgument commandArgument, Reader reader) {
+        Ticket element = new Ticket(collection.getFreeId(), reader);
         collection.insert(element);
         return "added\n";
     }

@@ -1,7 +1,7 @@
 package org.commands;
 
-import org.lib.CommandIO;
 import org.lib.MyCollection;
+import org.lib.Reader;
 import org.models.Ticket;
 
 import java.util.Optional;
@@ -18,8 +18,8 @@ public class AddIfMax implements Command {
     }
 
     @Override
-    public String execute(CommandArgument commandArgument, CommandIO commandIO) {
-        Ticket element = new Ticket(collection.getFreeId(), commandIO);
+    public String execute(CommandArgument commandArgument, Reader reader) {
+        Ticket element = new Ticket(collection.getFreeId(), reader);
         Ticket elementWithoutIds = element.cloneWithoutIdsAndDates();
 
         Stream<Ticket> greaterOrEqualElements = collection.stream().filter(x -> x.cloneWithoutIdsAndDates().compareTo(elementWithoutIds) >= 0);

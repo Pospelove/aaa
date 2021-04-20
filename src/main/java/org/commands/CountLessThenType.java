@@ -1,7 +1,7 @@
 package org.commands;
 
-import org.lib.CommandIO;
 import org.lib.MyCollection;
+import org.lib.Reader;
 import org.models.TicketType;
 
 public class CountLessThenType implements Command {
@@ -12,7 +12,7 @@ public class CountLessThenType implements Command {
     }
 
     @Override
-    public String execute(CommandArgument commandArgument, CommandIO commandIO) throws BadCommandArgumentException {
+    public String execute(CommandArgument commandArgument, Reader reader) throws BadCommandArgumentException {
         TicketType type = commandArgument.getEnum(TicketType.class);
         long n = collection.stream().filter(x -> x.getType().ordinal() < type.ordinal()).count();
         return "total: " + n + "\n";

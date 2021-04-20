@@ -1,7 +1,7 @@
 package org.commands;
 
-import org.lib.CommandIO;
 import org.lib.MyCollection;
+import org.lib.Reader;
 import org.models.Ticket;
 
 import java.util.Comparator;
@@ -14,7 +14,7 @@ public class PrintFieldDescendingType implements Command {
     }
 
     @Override
-    public String execute(CommandArgument commandArgument, CommandIO commandIO) {
+    public String execute(CommandArgument commandArgument, Reader reader) {
         return collection
                 .stream()
                 .map(Ticket::getType)

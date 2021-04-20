@@ -1,1 +1,10 @@
-execute_script script.txt
+add
+ Name: E 
+ Coordinates.X: 1
+ Coordinates.Y: 10
+ Type: vip
+ Price: 1
+ Discount: 10
+ Event.Name: 1000
+ Event.Description: 100
+ Event.Type: OPERA

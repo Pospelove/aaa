@@ -1,7 +1,7 @@
 package org.commands;
 
-import org.lib.CommandIO;
 import org.lib.MyCollection;
+import org.lib.Reader;
 
 public class Show implements Command {
     private final MyCollection collection;
@@ -11,7 +11,7 @@ public class Show implements Command {
     }
 
     @Override
-    public String execute(CommandArgument commandArgument, CommandIO commandIO) {
+    public String execute(CommandArgument commandArgument, Reader reader) {
         StringBuilder res = new StringBuilder();
         collection.forEach(element -> res.append(element.toString()).append("\n"));
         return res.toString();

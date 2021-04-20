@@ -1,65 +1,63 @@
 package org.commands;
 
-import org.lib.CommandIO;
 import org.lib.HistoryHolder;
+import org.lib.Reader;
 
+import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.*;
 
 public class ExecuteScript implements Command {
-    private final ArrayList<Command> commands;
+    private final Set<Command> commands;
     private final HistoryHolder historyHolder;
 
-    public ExecuteScript(ArrayList<Command> commands, HistoryHolder historyHolder) {
+    public ExecuteScript(Set<Command> commands, HistoryHolder historyHolder) {
         this.commands = commands;
         this.historyHolder = historyHolder;
     }
 
     @Override
-    public String execute(CommandArgument commandArgument, CommandIO commandIO) throws BadCommandArgumentException {
+    public String execute(CommandArgument commandArgument, Reader reader) throws BadCommandArgumentException {
         if (recursionDepth > 10) {
             return "Maximum recursion depth exceeded\n";
         }
         try {
             ++recursionDepth;
-            return runThisCommand(commandArgument, commandIO);
+            return runThisCommand(commandArgument, reader);
         } finally {
             --recursionDepth;
         }
     }
 
-    private String runThisCommand(CommandArgument commandArgument, CommandIO commandIO) throws BadCommandArgumentException {
+    private String runThisCommand(CommandArgument commandArgument, Reader reader) throws BadCommandArgumentException {
         String filename = commandArgument.getString();
 
         StringBuilder res = new StringBuilder();
         try {
-            Stream<String> lines = Files.lines(Path.of(filename));
-            for (String line : lines.collect(Collectors.toSet())) {
-                List<String> tokens = new ArrayList<>(Arrays.asList(line.split(" ")));
-                String commandName = tokens.get(0);
-                historyHolder.add(commandName);
-                CommandArgument subCommandArgument = new CommandArgument(tokens);
-                try {
-                    String subCommandResult = findCommand(commandName).execute(subCommandArgument, commandIO);
-                    res.append(subCommandResult);
-                } catch (NoSuchCommandException e) {
-                    return "Unknown command '" + commandName + "'\n";
+            Scanner scanner = new Scanner(new File(filename));
+
+            try {
+                while (true) {
+                    String line = scanner.nextLine();
+
+                    List<String> tokens = new ArrayList<>(Arrays.asList(line.split(" ")));
+                    String commandName = tokens.get(0);
+                    historyHolder.add(commandName);
+                    CommandArgument subCommandArgument = new CommandArgument(tokens);
+                    try {
+                        Reader subCommandReader = recursionDepth >= 2 ? makeReader(scanner, reader) : reader;
+                        String subCommandResult = findCommand(commandName).execute(subCommandArgument, subCommandReader);
+                        res.append(subCommandResult);
+                    } catch (NoSuchCommandException e) {
+                        return "Unknown command '" + commandName + "'\n";
+                    }
                 }
+            } catch (NoSuchElementException e) {
+                return res.toString();
             }
         } catch (IOException e) {
             return e.toString() + "\n";
         }
-        return res.toString();
-    }
-
-    private String runSubCommand(Command subCommand, CommandArgument subCommandArgument, CommandIO commandIO) throws BadCommandArgumentException {
-        return subCommand.execute(subCommandArgument, commandIO);
     }
 
     private Command findCommand(String commandName) throws NoSuchCommandException {
@@ -69,6 +67,45 @@ public class ExecuteScript implements Command {
             }
         }
         throw new NoSuchCommandException();
+    }
+
+    private Reader makeReader(Scanner scanner, Reader base) {
+        return new Reader() {
+            @Override
+            public String readString(String variableName) {
+                base.print(makeTip(variableName));
+                lastTip = makeTip(variableName);
+
+                String line = scanner.nextLine();
+                if (!line.startsWith(" ")) {
+                    base.print("\n");
+                    base.printErr(new Exception("Line must start with space"));
+                    return "";
+                }
+                line = line.substring(1);
+                if (!line.startsWith(lastTip)) {
+                    base.print("\n");
+                    base.printErr(new Exception("Line must start with " + lastTip));
+                    return "";
+                }
+
+                String res = line.split(" ", 2)[1];
+                base.print(res + "\n");
+                return res;
+            }
+
+            @Override
+            public void print(String str) {
+                lastTip = str;
+            }
+
+            @Override
+            public void printErr(Exception exception) {
+                base.printErr(exception);
+            }
+
+            private String lastTip;
+        };
     }
 
     private static class NoSuchCommandException extends Exception {

@@ -8,9 +8,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.NoSuchElementException;
-import java.util.Scanner;
+import java.util.*;
 
 /**
  * Hello world!
@@ -63,14 +61,14 @@ public class App {
 
     public static void main(String[] args) throws IOException {
         HistoryHolder historyHolder = new HistoryHolder(9);
-        CommandIO commandIO = new CommandIO(new Scanner(System.in), System.out, System.out);
+        CommandIO commandIO = new CommandIOStd(new Scanner(System.in), System.out, System.out);
         String fileName = getFileName();
 
         MyCollection myCollection = initializeCollection(fileName);
         System.out.println("Collection of " + myCollection.stream().count() + " elements has been initialized");
         System.out.println();
 
-        ArrayList<Command> commands = new ArrayList<>();
+        Set<Command> commands = new HashSet<>();
         commands.add(new Help(commands));
         commands.add(new Info(myCollection));
         commands.add(new Add(myCollection));
@@ -96,7 +94,7 @@ public class App {
                 String cmd = scanner.nextLine();
 
                 String path = writeToTemporaryFile(cmd);
-                Command executeScript = new ExecuteScript(commands, historyHolder);
+                Command executeScript = commands.stream().filter(x -> x.getClass() == ExecuteScript.class).findFirst().orElseThrow();
 
                 ArrayList<String> executeScriptArgs = new ArrayList<>();
                 executeScriptArgs.add(executeScript.getName());
@@ -104,7 +102,7 @@ public class App {
 
                 String res = null;
                 try {
-                    res = executeScript.execute(new CommandArgument(executeScriptArgs), commandIO);
+                    res = executeScript.execute(new CommandArgument(executeScriptArgs), new CommandIOReader(commandIO));
                     System.out.println(res);
                 } catch (BadCommandArgumentException exception) {
                     System.err.println(exception.getMessage());
@@ -112,7 +110,7 @@ public class App {
             }
         } catch (NoSuchElementException exception) {
             CommandArgument emptyArgument = new CommandArgument(new ArrayList<>());
-            (new Exit()).execute(emptyArgument, commandIO);
+            (new Exit()).execute(emptyArgument, new CommandIOReader(commandIO));
         }
     }
 }

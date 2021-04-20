@@ -1,9 +1,9 @@
 package org.commands;
 
-import org.lib.CommandIO;
+import org.lib.Reader;
 
 public interface Command {
-    String execute(CommandArgument commandArgument, CommandIO commandIO) throws BadCommandArgumentException;
+    String execute(CommandArgument commandArgument, Reader reader) throws BadCommandArgumentException;
 
     String getDescription();
 

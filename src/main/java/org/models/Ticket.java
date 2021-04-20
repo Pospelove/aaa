@@ -1,6 +1,5 @@
 package org.models;
 
-import org.lib.CommandIO;
 import org.lib.Reader;
 
 import java.io.*;
@@ -17,11 +16,10 @@ public class Ticket implements Comparable<Ticket>, Serializable {
     private long price = 0; //Значение поля должно быть больше 0
     private Long discount; //Поле не может быть null, Значение поля должно быть больше 0, Максимальное значение поля: 100
 
-    public Ticket(long id, CommandIO commandIO) {
+    public Ticket(long id, Reader reader) {
         this.id = id;
         creationDate = new Date();
 
-        Reader reader = new Reader(commandIO);
         name = reader.readString("Name");
         coordinates = new Coordinates(reader);
         type = reader.readEnum("Type", TicketType.class);

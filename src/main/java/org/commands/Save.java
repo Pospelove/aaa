@@ -1,9 +1,9 @@
 package org.commands;
 
 import org.lib.BufferedDataWriter;
-import org.lib.CommandIO;
 import org.lib.JsonSerializer;
 import org.lib.MyCollection;
+import org.lib.Reader;
 import org.models.Tickets;
 
 import java.io.IOException;
@@ -19,7 +19,7 @@ public class Save implements Command {
     }
 
     @Override
-    public String execute(CommandArgument commandArgument, CommandIO commandIO) {
+    public String execute(CommandArgument commandArgument, Reader reader) {
         Tickets tickets = new Tickets();
         tickets.tickets = new ArrayList<>();
         collection.forEach(x -> tickets.tickets.add(x));

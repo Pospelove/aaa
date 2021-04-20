@@ -1,18 +1,18 @@
 package org.commands;
 
-import org.lib.CommandIO;
+import org.lib.Reader;
 
-import java.util.List;
+import java.util.Set;
 
 public class Help implements Command {
-    private final List<Command> commandList;
+    private final Set<Command> commandList;
 
-    public Help(List<Command> commandList) {
+    public Help(Set<Command> commandList) {
         this.commandList = commandList;
     }
 
     @Override
-    public String execute(CommandArgument commandArgument, CommandIO commandIO) {
+    public String execute(CommandArgument commandArgument, Reader reader) {
         final StringBuilder res = new StringBuilder();
         for (Command command : this.commandList) {
             res.append(command.getName());

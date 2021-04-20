@@ -1,7 +1,7 @@
 package org.commands;
 
-import org.lib.CommandIO;
 import org.lib.MyCollection;
+import org.lib.Reader;
 
 public class Info implements Command {
     private final MyCollection myCollection;
@@ -11,7 +11,7 @@ public class Info implements Command {
     }
 
     @Override
-    public String execute(CommandArgument commandArgument, CommandIO commandIO) {
+    public String execute(CommandArgument commandArgument, Reader reader) {
         String info = "Type: " + myCollection.getType();
         info += "\nInitialization date: " + myCollection.getInitializationDate();
         info += "\nElements count: " + myCollection.getSize();

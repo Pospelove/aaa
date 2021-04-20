@@ -1,7 +1,7 @@
 package org.commands;
 
-import org.lib.CommandIO;
 import org.lib.MyCollection;
+import org.lib.Reader;
 import org.models.Ticket;
 
 public class Update implements Command {
@@ -12,8 +12,8 @@ public class Update implements Command {
     }
 
     @Override
-    public String execute(CommandArgument commandArgument, CommandIO commandIO) throws BadCommandArgumentException {
-        Ticket element = new Ticket(commandArgument.getInteger(), commandIO);
+    public String execute(CommandArgument commandArgument, Reader reader) throws BadCommandArgumentException {
+        Ticket element = new Ticket(commandArgument.getInteger(), reader);
         collection.update(element);
         return "updated\n";
     }
